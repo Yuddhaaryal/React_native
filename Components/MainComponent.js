@@ -121,7 +121,7 @@ function AboutNavigatorScreen({navigation}){
                     onPress={()=> navigation.toggleDrawer()}
                 />,
                 headerStyle:{
-                    backgroundColor:'#512DA8'
+                    backgroundColor:'red'
                 },
                 headerTintColor:'#fff',
                 headerTintStyle:{
