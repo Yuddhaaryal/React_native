@@ -1,16 +1,30 @@
 import React, { Component } from 'react';
-import { View,ScrollView,Text, Platform,Image, StyleSheet } from 'react-native';
+import { View,ScrollView,Text, Platform,Image, StyleSheet, TouchableNativeFeedbackBase } from 'react-native';
 import {Icon} from 'react-native-elements';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator,DrawerContentScrollView,DrawerItemList} from '@react-navigation/drawer';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {connect} from 'react-redux';
+import {fetchDishes, fetchPromos,fetchLeaders,fetchComments}from '../Redux/ActionCreator';
 
 import Menu from './MenuComponent';
 import Dishdetail from './DishdetailComponent';
 import Home from './HomeComponent';
 import Contact from './ContactComponent';
 import About from './AboutComponent';
+
+
+
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchDishes: () => dispatch(fetchDishes()),
+        fetchLeaders: () => dispatch(fetchLeaders()),
+        fetchPromos: () => dispatch(fetchPromos()),
+        fetchComments: () => dispatch(fetchComments())
+    }
+}
+
 const MenuNavigator = createStackNavigator();
 
 function MenuNavigatorScreen({navigation}) {
@@ -228,8 +242,13 @@ function MainNavigator({navigation}){
         </Drawer.Navigator>
     )
 }
-class Main extends Component {
-
+class Main extends Component {  
+    componentDidMount(){
+        this.props.fetchDishes()
+        this.props.fetchLeaders()
+        this.props.fetchComments()
+        this.props.fetchPromos()
+    }
   render() {
  
     return (
@@ -263,4 +282,4 @@ const styles = StyleSheet.create({
     }
   });
   
-export default Main;
+export default connect('',mapDispatchToProps)(Main);
