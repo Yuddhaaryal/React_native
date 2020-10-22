@@ -13,6 +13,8 @@ import Dishdetail from './DishdetailComponent';
 import Home from './HomeComponent';
 import Contact from './ContactComponent';
 import About from './AboutComponent';
+import Reservation from './ReservationComponent';
+import Favorites from './FavoriteComponent';
 
 
 
@@ -135,7 +137,7 @@ function AboutNavigatorScreen({navigation}){
                     onPress={()=> navigation.toggleDrawer()}
                 />,
                 headerStyle:{
-                    backgroundColor:'red'
+                    backgroundColor:'#512DA8' 
                 },
                 headerTintColor:'#fff',
                 headerTintStyle:{
@@ -151,6 +153,57 @@ function AboutNavigatorScreen({navigation}){
         </AboutNavigator.Navigator>
     )
     
+}
+const FavoritesNavigator = createStackNavigator()
+function FavoritesNavigatorScreen({navigation}) {
+    return (
+        <FavoritesNavigator.Navigator
+         //  initialRouteName= 'ResFavoervation'
+            screenOptions={{
+                headerLeft: () =><Icon name= 'menu' size='24' color = 'white' 
+                    onPress = {() => navigation.toggleDrawer()}
+                />,
+                headerStyle: {
+                    backgroundColor: '#512DA8' 
+                },
+                headerTintStyle:{
+                    color: '#fff'
+                },
+                headerTintColor: '#fff'
+            }}
+            >
+            <FavoritesNavigator.Screen
+                name="Favorites"
+                component= {Favorites}
+            />
+
+        </FavoritesNavigator.Navigator>
+    )
+}
+function ReserveNavigatorScreen({navigation}) {
+    return (
+        <ReserveNavigator.Navigator
+            initialRouteName= 'Reservation'
+            screenOptions={{
+                headerLeft: () =><Icon name= 'menu' size='24' color = 'white' 
+                    onPress = {() => navigation.toggleDrawer()}
+                />,
+                headerStyle: {
+                    backgroundColor: '#512DA8' 
+                },
+                headerTintStyle:{
+                    color: '#fff'
+                },
+                headerTintColor: '#fff'
+            }}
+            >
+            <ReserveNavigator.Screen
+                name="Reservation"
+                component= {Reservation}
+            />
+
+        </ReserveNavigator.Navigator>
+    )
 }
 function CustomDrawerContent(props){
     return(
@@ -189,7 +242,7 @@ function MainNavigator({navigation}){
                       <Icon
                         name='home'
                         type='font-awesome'            
-                        size={24}
+                        size= {24}
                         color={tintColor}
                         
                       />
@@ -238,10 +291,42 @@ function MainNavigator({navigation}){
                       />
                     )
                 }}
-                />
+            />
+            <Drawer.Screen 
+                name="Favorites" 
+                component={FavoritesNavigatorScreen}
+                options={{
+                    drawerIcon: ({ tintColor }) => (
+                      <Icon
+                        name='heart'
+                        type='font-awesome'            
+                        size={24}
+                        color={tintColor}
+                      />
+                    )
+                }}
+            />
+
+            <Drawer.Screen
+                name= 'Reserve Table'
+                component= {ReserveNavigatorScreen}
+                options={{
+                    drawerIcon: ({tintColor}) => (
+                        <Icon 
+                            name= 'cutlery'
+                            type= 'font-awesome'
+                            size={24}
+                            color={tintColor}
+                        />
+                    )
+                }}
+
+            />
         </Drawer.Navigator>
     )
 }
+const ReserveNavigator = createStackNavigator()
+
 class Main extends Component {  
     componentDidMount(){
         this.props.fetchDishes()

@@ -6,18 +6,44 @@ import { comments } from './comments';
 import { promotions } from './promotions';
 import { leaders } from './leaders';
 import {favorites} from './favorites';
+import  { persistStore, persistCombineReducers} from 'redux-persist';
+import storage from 'redux-persist/es/storage';
 
-export const ConfigureStore = () => {
+const persistConfig = {
+    key: 'root',
+    storage,
+    debug: 'true'
+}
+export const ConfigureStore= ()=>{
     const store = createStore(
-        combineReducers({
+        persistCombineReducers(persistConfig,{
             dishes,
             comments,
-            promotions,
             leaders,
+            promotions,
             favorites
         }),
-        applyMiddleware(thunk, logger)
-    );
-
-    return store;
+        applyMiddleware(thunk,logger)
+    )
+    const persistor = persistStore(store)
+    return {store, persistor};
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
