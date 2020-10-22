@@ -1,69 +1,101 @@
-import React, {Component} from 'react';
-import {ScrollView, View, Text} from 'react-native';
+import React,{Component} from 'react';
+import {connect} from 'react-redux';
+import {View, Text, Easing,Animated} from 'react-native';
 import {Card} from 'react-native-elements';
-import {Loading} from './LoadingComponent';
-import { connect } from 'react-redux';
-import { baseUrl } from '../shared/baseUrl';
+import {baseUrl} from '../shared/baseUrl';
+import {Loading } from './LoadingComponent';
 
-const mapStateToProps = state => {
-    return {
-        leaders: state.leaders,
+const mapStateToProps =(state) => (
+    {
         dishes: state.dishes,
-        promotions: state.promotions
+        promotions: state.promotions,
+        leaders: state.leaders
     }
-}
-function RenderItem(props){
-    const item= props.item
-    if(props.isLoading){
-        return(
-            <Loading/>
-        )
+)
+
+class Home extends Component {
+    constructor(props){
+        super(props)
+        this.animatedValue= new Animated.Value(0)
     }
-    else if(props.errMess){
-        return(
-            <View>
-                <Text>{props.errMess}</Text>
-            </View>
-        )
+    componentDidMount(){
+        this.animate()
     }
-    else
-    if(item!=null){
-        return(
-            <Card
-            featuredTitle={item.name}
-            featuredSubtitle={item.designation}
-            image={{uri: baseUrl+item.image}}
-                >
+    animate(){
+        this.animatedValue.setValue(0)
+        Animated.timing(
+            this.animatedValue,{
+                toValue: 8,
+                duration: 8000,
+                easing: Easing.linear
+            }
+        ).start(()=>this.animate())
+    }
+    render(){
+        const XPOS1= this.animatedValue.interpolate({
+            inputRange: [0,1,3,5,8],
+            outputRange: [1200,600,0,-600,-1200]
+        })
+        const XPOS2= this.animatedValue.interpolate({
+            inputRange: [0,2,4,6,8],
+            outputRange: [1200,600,0,-600,-1200]
+        })
+        const XPOS3= this.animatedValue.interpolate({
+            inputRange: [0,3,5,7,8],
+            outputRange: [1200,600,0,-600,-1200]
+        })
+        const RenderItems = ({item,isLoading,errMess}) => {
+        if(isLoading){
+            return(
+                <Loading/>
+            )
+        }
+        else if (errMess){
+            return(
+                <View>
+                    <Text>
+                        {errMess}
+                    </Text>
+                </View>
+            )
+        }
+        else
+        return (
+            <Card 
+                featuredTitle={item.name}
+                featuredSubtitle={item.designation}
+                image={{uri:baseUrl+item.image}}
+            >
                 <Text>{item.description}</Text>
             </Card>
         )
-    }
-    else return(
-        <View></View>
-    )
-}
-class Home extends Component{
-  
-    static navigationOptions= {
-        title: 'Home',
-    }
-    render(){
+        }
         return(
-            <ScrollView>
-                <RenderItem item={this.props.dishes.dishes.filter(dish=>dish.featured)[0]}
-                            errMess={this.props.dishes.errMess}
-                            isLoading={this.props.dishes.isLoading}
+            <View style={{flex:1, flexDirection:'row', justifyContent: 'center'}}>
+                <Animated.View style={{transform: [{translateX: XPOS1}], width:'100%'}}>
+                <RenderItems
+                    item={this.props.dishes.dishes.filter(dish=> dish.featured)[0]}
+                    isLoading={this.props.dishes.isLoading}
+                    errMess={this.props.dishes.errMess}
                 />
-                <RenderItem item={this.props.promotions.promotions.filter(promo=>promo.featured)[0]}
-                             errMess={this.props.promotions.errMess}
-                             isLoading={this.props.promotions.isLoading}
+                </Animated.View>
+                <Animated.View style={{transform: [{translateX: XPOS2}], width:'100%'}}>
+                <RenderItems
+                    item={this.props.leaders.leaders.filter(dish=> dish.featured)[0]}
+                    isLoading={this.props.leaders.isLoading}
+                    errMess={this.props.leaders.errMess}
                 />
-                <RenderItem item={this.props.leaders.leaders.filter(leader=>leader.featured)[0]}
-                             errMess={this.props.leaders.errMess}
-                             isLoading={this.props.leaders.isLoading}
+                </Animated.View>
+                <Animated.View style={{transform: [{translateX: XPOS3}], width:'100%'}}>
+                <RenderItems
+                    item={this.props.promotions.promotions.filter(dish=> dish.featured)[0]}
+                    isLoading={this.props.promotions.isLoading}
+                    errMess={this.props.promotions.errMess}
                 />
-            </ScrollView>
+                </Animated.View>
+                
+            </View>
         )
     }
 }
-export default connect(mapStateToProps)(Home);   
+export default connect(mapStateToProps)(Home)
