@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Modal, ScrollView, Text, View, StyleSheet, Button,TouchableHighlight } from 'react-native';
+import { FlatList, Modal, ScrollView, Text, View, StyleSheet, Button,TouchableHighlight,Alert, PanResponder } from 'react-native';
 import { Card,Icon,Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
@@ -22,10 +22,43 @@ const mapStateToProps = state => {
 }
 function RenderDish(props) {
     const dish = props.dish
+    const recognizeGesture = ({x,y,dx,dy}) =>{
+        if(dx < -200)
+        return true
+        else 
+        return false
+    }
+    const panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: (e,gestureState) => {
+            return true
+        },
+        onPanResponderEnd: (e,gestureState) => {
+            if(recognizeGesture(gestureState))
+                Alert.alert(
+                    'Add Favorite',
+                    'Are you sure to add this dish to your favorite?',
+                    [
+                        {
+                            text: 'Cancel',
+                            onPress: console.log('Cancel Pressed'),
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'OK',
+                            onPress: ()=> props.favorite ? console.log('Already Favorite'): props.onPress()
+                        }
+                    ],
+                    {cancelable: 'false'}
+                )
+            return true
+        }
+    })
+
 
     if (dish != null) {
             return(
-                <Animatable.View animation='fadeInDown' duration={2000}>
+                <Animatable.View animation='fadeInDown' duration={2000}
+                    {...panResponder.panHandlers}>
                     <Card
                         featuredTitle={dish.name}
                         image={{uri: baseUrl+dish.image}}>
