@@ -15,6 +15,7 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import Reservation from './ReservationComponent';
 import Favorites from './FavoriteComponent';
+import Login from './LoginComponent';
 
 
 
@@ -59,11 +60,6 @@ function MenuNavigatorScreen({navigation}) {
                         onPress={()=> navigation.toggleDrawer()}
                     />
                 }}
-
-
-
-               
-                
             />
             <MenuNavigator.Screen
                 name="Dishdetail"
@@ -205,6 +201,33 @@ function ReserveNavigatorScreen({navigation}) {
         </ReserveNavigator.Navigator>
     )
 }
+const LoginNavigator=createStackNavigator()
+function LoginNavigatorScreen({navigation}) {
+    return (
+        <LoginNavigator.Navigator
+            initialRouteName= 'Home'
+            screenOptions={{
+                headerLeft: () =><Icon name= 'menu' size='24' color = 'white' 
+                    onPress = {() => navigation.toggleDrawer()}
+                />,
+                headerStyle: {
+                    backgroundColor: '#512DA8' 
+                },
+                headerTintStyle:{
+                    color: '#fff'
+                },
+                headerTintColor: '#fff'
+            }}
+            >
+            <LoginNavigator.Screen
+                name="Login"
+                component= {Login}
+            />
+
+        </LoginNavigator.Navigator>
+    )
+}
+
 function CustomDrawerContent(props){
     return(
         <DrawerContentScrollView {...props}>
@@ -249,6 +272,23 @@ function MainNavigator({navigation}){
                     )
                 }}
               
+            />
+            <Drawer.Screen
+                 name="Login" 
+                 component={LoginNavigatorScreen}
+                 options={{
+ 
+                     drawerIcon: ({ tintColor, focused }) => (
+                       <Icon
+                         name='key'
+                         type='font-awesome'            
+                         size= {24}
+                         color={tintColor}
+                         
+                       />
+                     )
+                 }}
+
             />
             <Drawer.Screen 
                 name="Menu" 

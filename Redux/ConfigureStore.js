@@ -9,25 +9,55 @@ import {favorites} from './favorites';
 import  { persistStore, persistCombineReducers} from 'redux-persist';
 import storage from 'redux-persist/es/storage';
 
-const persistConfig = {
-    key: 'root',
-    storage,
-    debug: 'true'
-}
-export const ConfigureStore= ()=>{
+export const ConfigureStore = () => {
+    const persistConfig ={
+        key: 'root',
+        storage,
+        debug: true
+    }
     const store = createStore(
-        persistCombineReducers(persistConfig,{
-            dishes,
-            comments,
-            leaders,
-            promotions,
-            favorites
-        }),
+        persistCombineReducers(persistConfig,
+            {
+                dishes,
+                leaders,
+                promotions,
+                comments,
+                favorites
+            }
+        ),
         applyMiddleware(thunk,logger)
     )
     const persistor = persistStore(store)
-    return {store, persistor};
+    return {persistor,store}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -57,7 +57,7 @@ class About extends Component{
         }
         else
         return(
-            <Animatable.View animation={fadeInDown} duration={2000} delay={1000}>
+            <Animatable.View animation='fadeInDown' duration={2000} delay={1000}>
             <ScrollView>
                 <History/>
                 <Card title="Corporate Leadership">

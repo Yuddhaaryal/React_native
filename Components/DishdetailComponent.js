@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Modal, ScrollView, Text, View, StyleSheet, Button,TouchableHighlight,Alert, PanResponder } from 'react-native';
+import { FlatList, Modal, ScrollView, Text, View, StyleSheet, Button,TouchableHighlight,Alert, PanResponder,Share } from 'react-native';
 import { Card,Icon,Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
@@ -28,6 +28,12 @@ function RenderDish(props) {
         else 
         return false
     }
+    const recognizeComment = ({dx}) => {
+        if(dx>200)
+        return true
+        else
+        return false
+    }
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: (e,gestureState) => {
             return true
@@ -50,14 +56,35 @@ function RenderDish(props) {
                     ],
                     {cancelable: 'false'}
                 )
+            if(recognizeComment(gestureState)){
+                   props.showModal()
+            }
+
+    
             return true
-        }
+        },
+  
     })
+    const shareDish =(title,message,url)=>{
+        Share.share({
+            title: title,
+            message: title+':'+message+''+url,
+            url: url
+        },
+        {
+            dialogTitle: "Share"+title, //android
+            tintColor: "#512DA8",
+            subject: 'Sharing a dish'
+
+        })
+        Share.sharedAction
+    }
+
 
 
     if (dish != null) {
             return(
-                <Animatable.View animation='fadeInDown' duration={2000}
+                <Animatable.View animation='fadeInDown' duration={2000} 
                     {...panResponder.panHandlers}>
                     <Card
                         featuredTitle={dish.name}
@@ -78,6 +105,12 @@ function RenderDish(props) {
                                 type= 'font-awesome'
                                 color= '#f50'
                                 onPress={() => props.showModal()}
+                            />
+                              <Icon raised reverse
+                                name={'share'}
+                                type= 'font-awesome'
+                                color= '#f50'
+                                onPress={() => shareDish(dish.name,dish.description,baseUrl+dish.image)}
                             />
                         </View>
                 

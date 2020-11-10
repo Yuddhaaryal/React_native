@@ -1,9 +1,12 @@
-import { Text, View, ScrollView, StyleSheet, Switch, Button, TouchableOpacity,Modal } from 'react-native';
+import { Text, View, ScrollView, StyleSheet, Switch, Button, TouchableOpacity,Modal, Alert } from 'react-native';
 import { Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import React,{Component} from 'react';
 import {Picker} from '@react-native-community/picker';
+import * as Animatable from 'react-native-animatable';
+import * as Notifications  from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 
 class Reservation extends Component {
 
@@ -26,7 +29,26 @@ class Reservation extends Component {
 
     handleReservation() {
         console.log(JSON.stringify(this.state));
-        this.toggleModal()
+        Alert.alert(
+            'Your Reservation Okey?',
+            'Number of guests:'+this.state.guests+'\n Smoking?:' + this.state.smoking+'\n Date and Time:'+ this.state.date,
+            [
+                {
+                    text: 'Cancel',
+                    onPress:()=>{this.resetForm()},
+                    
+                },
+                {
+                    text: 'OK',
+                    onPress: ()=> {
+                        this.presentNotification(this.state.date);
+                        this.resetForm();
+                }}
+            ],
+            {
+                cancelable: false
+            }
+        )
     }
     toggleModal(){
         this.setState({
@@ -42,12 +64,63 @@ class Reservation extends Component {
             mode: 'date'
         })
     }
+ 
+    async askPermission() {
+        return await Notifications.requestPermissionsAsync({
+          ios: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+            allowAnnouncements: true,
+          },
+        });
+      }
+    async  getPermission() {
+        const settings = await Notifications.getPermissionsAsync();
+        return (
+          settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+        );
+      }
+      async obtainNotificationPermission() {
+        let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+        if (permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+            if (permission.status !== 'granted') {
+                Alert.alert('Permission not granted to show notifications');
+            }
+        }
+        return permission;
+    }
+
+    async presentNotification(date){
+  //      this.obtainNotificationPermission()
+       if(!this.getPermission()){
+            this.askPermission()
+        }
+        Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+
+        Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Look at that notification',
+          body: date+"requested",
+        },
+        trigger: null,
+      });
+    }
+
     onChange = (event, selectedDate) => {
         this.setState({date: selectedDate})
       }
     render() {
         
         return(
+            <Animatable.View animation='zoomIn' duration={2000} delay={1000}>
             <ScrollView>
                 <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Number of Guests</Text>
@@ -127,7 +200,8 @@ class Reservation extends Component {
                         accessibilityLabel="Learn more about this purple button"
                         />
                 </View>
-                <Modal 
+               
+               <Modal 
                     visible={this.state.showModal}
                     onDismiss={()=>{this.toggleModal()}}
                     animationType= {'slide'}
@@ -146,7 +220,9 @@ class Reservation extends Component {
                     </View>
                     
                 </Modal>
+             
             </ScrollView>
+            </Animatable.View>
         );
     }
 
